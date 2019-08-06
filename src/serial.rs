@@ -1557,26 +1557,21 @@ macro_rules! halUsartImpl {
 
                     // Enable transmission and receiving
                     // and configure frame
+
                     usart.cr1.write(|w| {
-                        w.ue()
-                            .set_bit()
-                            .te()
-                            .set_bit()
-                            .re()
-                            .set_bit()
-                            .m()
-                            .bit(match config.wordlength {
+                        w.m().bit(
+                            match config.wordlength {
                                 WordLength::DataBits8 => false,
                                 WordLength::DataBits9 => true,
-                            }).pce()
-                            .bit(match config.parity {
+                            })
+                         .pce().bit(
+                            match config.parity {
                                 Parity::ParityNone => false,
                                 _ => true,
-                            }).ps()
-                            .bit(match config.parity {
-                                Parity::ParityOdd => true,
-                                _ => false,
                             })
+                         .te().enabled()
+                         .re().enabled()
+                         .ue().enabled()
                     });
 
                     Ok(Serial { usart, pins }.config_stop(config))
